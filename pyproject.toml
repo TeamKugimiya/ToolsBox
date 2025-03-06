@@ -1,26 +1,19 @@
 [project]
 name = "ToolsBox"
 version = "1.0"
-description = ""
-authors = [
-    {name = "Miku",email = "26039249+xMikux@users.noreply.github.com"}
-]
-license = {text = "MIT"}
+description = "一個簡單的工具盒"
 readme = "README.md"
-requires-python = ">=3.13,<4.0"
+requires-python = ">=3.13"
 dependencies = [
-    "paratranz-py @ git+https://github.com/TeamKugimiya/paratranz-py.git",
-    "loguru (>=0.7.3,<0.8.0)"
+    "loguru>=0.7.3",
+    "paratranz-py",
 ]
 
-[tool.poetry]
-packages = [
-    { include = "bulk_update" }
-]
+[tool.uv.sources]
+paratranz-py = { git = "https://github.com/TeamKugimiya/paratranz-py" }
+
+[tool.uv]
+package = true
 
 [project.scripts]
 bulk_update = "bulk_update:main"
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
