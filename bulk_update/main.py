@@ -10,14 +10,24 @@ def get_string_id_dict(para: ParaTranz, project_id: int, file_id: int) -> dict:
     並將其轉換成 key 與 id 的字典
     """
     retrun_data = {}
-    data = para.strings.get_strings(
-        project_id=project_id, file_id=file_id, stage=None, page_size=300
-    )
-    for string_data in data["results"]:
-        string_id = string_data["id"]
-        string_key = string_data["key"]
-        retrun_data[string_key] = string_id
+    file_string_count = para.files.get_file(project_id=project_id, file_id=file_id)["total"]
+    ## Using file string count to caculate the pageCount
+    pageSize = 300
+    pageCount = file_string_count // pageSize + 1
+    # logger.debug(pageCount)
+    ## Loop with page count
+    for i in range(pageCount):
+        page = i + 1
+        data = para.strings.get_strings(
+            project_id=project_id, file_id=file_id, stage=None, page_size=pageSize, page=page
+        )
+        for string_data in data["results"]:
+            string_id = string_data["id"]
+            string_key = string_data["key"]
+            retrun_data[string_key] = string_id
+
     # logger.debug("Strings ID Key Dict: {}", retrun_data)
+
     return retrun_data
 
 
@@ -59,6 +69,8 @@ def main():
         raise ValueError("FILE_ID is required.")
     if not os.getenv("TRANSLATED_FILE_PATH"):
         raise ValueError("TRANSLATED_FILE_PATH is required")
+
+    logger.add("bulk_update.log", rotation="30 MB")
 
     Para = ParaTranz(api_token=os.getenv("AUTH_TOKEN"))
     project_id = os.getenv("PROJECT_ID")
